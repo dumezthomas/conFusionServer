@@ -10,6 +10,19 @@ const userRouter = express.Router();
 
 userRouter.use(bodyParser.json());
 
+userRouter.get("/", authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
+  Users.find({})
+    .then(
+      (users) => {
+        res.statusCode = 200;
+        res.setHeader("Content-Type", "application/json");
+        res.json(users);
+      },
+      (err) => next(err)
+    )
+    .catch((err) => next(err));
+});
+
 userRouter.post("/signup", (req, res, next) => {
   Users.register(new Users({ username: req.body.username }), req.body.password, (err, user) => {
     if (err) {
